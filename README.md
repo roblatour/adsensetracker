@@ -35,5 +35,5 @@ can be found here: https://www.printables.com/model/339237-lilygo-t-display-s3-w
 
 Want to contribute? Great!
 
-Please visit https://rlatour.com 
+Please visit https://rlatour.com/adsensetracker 
 
