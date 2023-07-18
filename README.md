@@ -1,4 +1,4 @@
-# adsensetracker
+# AdSense Tracker
 
 Rob Latour, 2023
 
@@ -8,7 +8,7 @@ AdSense Tracker is an open source project to monitor Google AdSense views, click
 
 ![components](https://github.com/roblatour/adsensetracker/blob/main/exampledisplay.jpg)
 
-Please visit https://rlatour.com/adsensetracker for the full outline including what is needed to put the project together and how that is done.
+Please visit https://rlatour.com/adsensetracker for the full outline including what's needed to put the project together and how that's done.
 
 ## License
 
@@ -16,11 +16,11 @@ MIT
 
 ## This repo includes
 
-The open source code for the AdSenseTracker project:
+The open source code for the AdSense Tracker project:
 
 - Windows .Net 6 C# Visual Studio solution source code
 
-- pre-built signed Windoes installation setup executable file for the Windows app
+- pre-built signed Windows installation file for the Windows app
   (in case you don't want to build your own from the source code above)
   
 - Arduino sketch

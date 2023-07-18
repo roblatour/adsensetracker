@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "gsLt9/i9HWGlczF7WujCWIgRHgt3M4zXSXOgFhNgfPWNvVLAKAspgt/EWuMO4xp5kC0IMD4Pb0TqTbpBEdG/Mw==",
+  "success": true,
+  "projectFilePath": "E:\\Documents\\GitHub\\adsensetracker\\Visual Studio code\\WinAdSenseTracker\\WinAdSenseTracker.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\google.apis\\1.61.0\\google.apis.1.61.0.nupkg.sha512",
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\google.apis.adsense.v2\\1.61.0.3106\\google.apis.adsense.v2.1.61.0.3106.nupkg.sha512",
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\google.apis.auth\\1.61.0\\google.apis.auth.1.61.0.nupkg.sha512",
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\google.apis.core\\1.61.0\\google.apis.core.1.61.0.nupkg.sha512",
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\mqttnet\\4.2.1.781\\mqttnet.4.2.1.781.nupkg.sha512",
+    "C:\\Users\\Rob Latour\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
