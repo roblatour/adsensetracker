@@ -53,9 +53,9 @@ namespace WinAdSenseTracker
 
             Properties.Settings.Default.Reload();
 
-            return (Properties.Settings.Default.GoogleClientID == "") ||
-                 (Properties.Settings.Default.GoogleClientSecret == "") ||
-                 (Properties.Settings.Default.MQTTBrokerAddress == "") ||
+            return (Properties.Settings.Default.GoogleClientID.Length != 72) ||
+                 (Properties.Settings.Default.GoogleClientSecret.Length != 35) ||
+                 (Properties.Settings.Default.MQTTBrokerAddress.Length < 4) ||
                  (Properties.Settings.Default.MQTTBrokerPort < 1) ||
                  (Properties.Settings.Default.MQTTBrokerPort > 65536) ||
                  (Properties.Settings.Default.MQTTBrokerUserID == "") ||
@@ -565,7 +565,7 @@ namespace WinAdSenseTracker
 
         private async void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if ((ShutdownWithoutQuestion) || (MessageBox.Show("Do you really quit?", this.Text + " - Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
+            if ((ShutdownWithoutQuestion) || (MessageBox.Show("Do you really want to quit (exit the program)?", this.Text + " - Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
             {
                 if (client.IsConnected)
                 {
