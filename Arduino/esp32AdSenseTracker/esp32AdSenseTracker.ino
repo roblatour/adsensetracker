@@ -1,4 +1,4 @@
-// ESP32 AdSense Tracker
+// ESP32 AdSense Tracker v1.1
 //
 // Copyright Rob Latour, 2023
 // License: MIT
@@ -56,9 +56,9 @@ EspMQTTClient client(
   MQTTClientName,
   MQTTPort);
 
-String currentPageViews = "0";
-String currentClicks = "0";
-String currentRevenue = "$0.00";
+String totalPageViews = "0";
+String totalClicks = "0";
+String totalEarnings = "$0.00";
 
 TFT_eSPI tft = TFT_eSPI();
 #define TFT_TURQUOISE 0x2F5C  // http://www.barth-dev.de/online/rgb565-color-picker/
@@ -143,52 +143,47 @@ void updateDisplay() {
   tft.setCursor(leftMargin, topMargin);
   tft.println("Views");
 
-  tw = tft.textWidth(currentPageViews);
+  tw = tft.textWidth(totalPageViews);
   tft.setCursor(rightMargin - tw, topMargin);
-  tft.println(currentPageViews);
+  tft.println(totalPageViews);
 
   // display the Clicks line
   tft.setTextColor(TFT_TURQUOISE);
   tft.setCursor(leftMargin, midHeight);
   tft.println("Clicks");
 
-  tw = tft.textWidth(currentClicks);
+  tw = tft.textWidth(totalClicks);
   tft.setCursor(rightMargin - tw, midHeight);
-  tft.println(currentClicks);
+  tft.println(totalClicks);
 
   // dispaly the Revenue line
   tft.setTextColor(TFT_GREEN);
   tft.setCursor(leftMargin, bottomMargin);
-  tft.println("Revenue");
+  tft.println("Earnings");
 
-  tw = tft.textWidth(currentRevenue);
+  tw = tft.textWidth(totalEarnings);
   tft.setCursor(rightMargin - tw, bottomMargin);
-  tft.println(currentRevenue);
+  tft.println(totalEarnings);
 };
-
-void requestAnUpdate() {
-
-  client.publish("adsense/updaterequest", "update please");
-}
 
 void onConnectionEstablished() {
 
   client.subscribe("adsense/TotalPageViews", [](const String &payload) {
-    currentPageViews = String(payload);
+    totalPageViews = String(payload);
     updateDisplay();
   });
 
   client.subscribe("adsense/TotalClicks", [](const String &payload) {
-    currentClicks = String(payload);
+    totalClicks = String(payload);
     updateDisplay();
   });
 
   client.subscribe("adsense/TotalEarnings", [](const String &payload) {
-    currentRevenue = "$" + String(payload);
+    totalEarnings = "$" + String(payload);
     updateDisplay();
   });
 
-  requestAnUpdate();
+  client.publish("adsense/refreshrequest", "get last known values");
 }
 
 void setup() {
@@ -212,6 +207,8 @@ void setup() {
 void loop() {
 
   client.loop();
+
   if (checkButton(TOP_BUTTON))
-    requestAnUpdate();
+      client.publish("adsense/refreshrequest", "get current values from Google");
+      
 }

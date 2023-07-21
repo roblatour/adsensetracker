@@ -32,13 +32,13 @@ namespace WinAdSenseTracker
         private static readonly int MaxListPageSize = 50;
 
         // Publishing stuff
-        int howOftenToPublish = Properties.Settings.Default.UpdateFrequency * 60 * 1000;
+        int howOftenToPublish = Properties.Settings.Default.RefreshFrequency * 60 * 1000;
 
         int lastTotalPageViews = -1;
         int lastTotalClicks = -1;
         decimal lastTotalEarnings = -1;
 
-        bool ShutdownWithoutQuestion = false;         
+        bool ShutdownWithoutQuestion = false;
 
         public frmMain()
         {
@@ -88,8 +88,8 @@ namespace WinAdSenseTracker
 
             this.Text = ApplicationName;
             this.Icon = Resources.WinAdSenseTracker;
-                      
-            ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(".0", "");                       
+
+            ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(".0", "");
 
             notifyIcon1.Text = this.Text;
             notifyIcon1.Icon = this.Icon;
@@ -98,11 +98,11 @@ namespace WinAdSenseTracker
             this.Visible = false;
 
             ContextMenuStrip = new ContextMenuStrip();
-    
+
             ToolStripMenuItem header = new ToolStripMenuItem();
-            header.Text = ApplicationName + " v" + ApplicationVersion;  
+            header.Text = ApplicationName + " v" + ApplicationVersion;
             header.ForeColor = Color.Gray;
-            header.Enabled = false; 
+            header.Enabled = false;
 
             ToolStripSeparator toolStripSeparator1 = new ToolStripSeparator();
 
@@ -211,7 +211,7 @@ namespace WinAdSenseTracker
 
                     // this process assumes the user will have at least one page view reported, 
                     // if not then we will have to wait the full 20 seconds
-                    if (managementApiConsumer.TotalPageViews > 0) 
+                    if (managementApiConsumer.TotalPageViews > 0)
                     {
                         waitForGoogleAuthorizationToGoLive = false;
                     }
@@ -220,14 +220,14 @@ namespace WinAdSenseTracker
 
                         duration = DateTime.Now - startTime;
 
-                        if (duration.TotalSeconds > 20)               
-                           waitForGoogleAuthorizationToGoLive = false;                        
+                        if (duration.TotalSeconds > 20)
+                            waitForGoogleAuthorizationToGoLive = false;
                         else
-                           await Task.Delay(1000);                       
+                            await Task.Delay(1000);
 
                     };
 
-                    testservice.Dispose();              
+                    testservice.Dispose();
 
                 };
 
@@ -256,8 +256,8 @@ namespace WinAdSenseTracker
                 .WithCleanSession()
                 .Build();
 
-            btnUpdate.Enabled = false;
-            btnUpdate.Text = "MQTT not connected";
+            btnRefresh.Enabled = false;
+            btnRefresh.Text = "MQTT not connected";
 
             _ = Task.Run(
                async () =>
@@ -270,52 +270,106 @@ namespace WinAdSenseTracker
                            {
                                await client.ConnectAsync(options, CancellationToken.None);
 
-                               // Subscribe to the topic "adsense/updaterequest"
+                               // Subscribe to the topic "adsense/refreshrequest" (which are sent by the ESP32 when it needs to be sent the Adsense values via MQTT)
                                var mqttSubscribeOptions = factory.CreateSubscribeOptionsBuilder()
                                      .WithTopicFilter(
                                         f =>
                                             {
-                                                f.WithTopic("adsense/updaterequest");
+                                                f.WithTopic("adsense/refreshrequest");
                                             })
                                     .Build();
 
                                var response = await client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
 
-                               // If we receive a message on the topic "adsense/updaterequest" with the payload "update please" (which come from the ESP32 when it is booted)
-                               // then publish the currently understood values of TotalPageViews and TotalEarnings
-                               // this is done without first refreshing these values from Google; they are simply the last values that were published
+                             
+                               // if the payload is "get last known values" it signifies the ESP32 has just been booted and wants to know the last known Adsense values so it can displayed them
+                               //   
+                               // if the payload is "get current values from Google" it signifies the user has press the top botton on the ESP32 to request an immediate refresh of the Adsense values
+                               //
+
                                Func<MqttApplicationMessageReceivedEventArgs, Task> funct = async (e) =>
                                {
                                    var message = e.ApplicationMessage;
                                    var topic = message.Topic;
                                    var payload = message.ConvertPayloadToString();
 
-                                   if ((topic == "adsense/updaterequest") && (payload == "update please"))
+                                   if (topic == "adsense/refreshrequest")
                                    {
-                                       var applicationMessage = new MqttApplicationMessageBuilder()
-                                      .WithTopic("adsense/TotalPageViews")
-                                      .WithPayload(lastTotalPageViews.ToString())
-                                      .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
-                                      .Build();
-                                       await client.PublishAsync(applicationMessage, CancellationToken.None);
-                                       lastTotalPageViews = managementApiConsumer.TotalPageViews;
 
-                                       applicationMessage = new MqttApplicationMessageBuilder()
-                                       .WithTopic("adsense/TotalClicks")
-                                       .WithPayload(lastTotalClicks.ToString())
-                                       .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
-                                       .Build();
-                                       await client.PublishAsync(applicationMessage, CancellationToken.None);
-                                       lastTotalPageViews = managementApiConsumer.TotalPageViews;
+                                       if (payload == "get last known values")
+                                       {
 
+                                           var applicationMessage = new MqttApplicationMessageBuilder()
+                                          .WithTopic("adsense/TotalPageViews")
+                                          .WithPayload(lastTotalPageViews.ToString())
+                                          .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                          .Build();
+                                           await client.PublishAsync(applicationMessage, CancellationToken.None);
 
-                                       applicationMessage = new MqttApplicationMessageBuilder()
-                                      .WithTopic("adsense/TotalEarnings")
-                                      .WithPayload(lastTotalEarnings.ToString())
-                                      .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
-                                      .Build();
-                                       await client.PublishAsync(applicationMessage, CancellationToken.None);
-                                   }
+                                           applicationMessage = new MqttApplicationMessageBuilder()
+                                           .WithTopic("adsense/TotalClicks")
+                                           .WithPayload(lastTotalClicks.ToString())
+                                           .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                           .Build();
+                                           await client.PublishAsync(applicationMessage, CancellationToken.None);
+
+                                           applicationMessage = new MqttApplicationMessageBuilder()
+                                          .WithTopic("adsense/TotalEarnings")
+                                          .WithPayload(lastTotalEarnings.ToString())
+                                          .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                          .Build();
+                                           await client.PublishAsync(applicationMessage, CancellationToken.None);
+
+                                       }
+                                       else
+                                       {
+                                           if (payload == "get current values from Google")
+                                           {
+
+                                               if (client.IsConnected)
+                                               {
+
+                                                   // get the AdSense data from Google
+                                                   managementApiConsumer.RunCalls();
+
+                                                   // Publish TotalPageViews whether or not it has changed
+                                                   var applicationMessage = new MqttApplicationMessageBuilder()
+                                                   .WithTopic("adsense/TotalPageViews")
+                                                   .WithPayload(managementApiConsumer.TotalPageViews.ToString())
+                                                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                                   .Build();
+                                                   await client.PublishAsync(applicationMessage, CancellationToken.None);
+                                                   tbTotalPageViews.Text = managementApiConsumer.TotalPageViews.ToString();
+                                                   lastTotalPageViews = managementApiConsumer.TotalPageViews;
+
+                                                   // Publish TotalClicks whether or not it has changed
+                                                   applicationMessage = new MqttApplicationMessageBuilder()
+                                                   .WithTopic("adsense/TotalClicks")
+                                                   .WithPayload(managementApiConsumer.TotalClicks.ToString())
+                                                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                                   .Build();
+                                                   await client.PublishAsync(applicationMessage, CancellationToken.None);
+                                                   tbTotalClicks.Text = managementApiConsumer.TotalClicks.ToString();
+                                                   lastTotalClicks = managementApiConsumer.TotalClicks;
+
+                                                   // Publish TotalEarnings whether or not it has changed
+                                                   applicationMessage = new MqttApplicationMessageBuilder()
+                                                   .WithTopic("adsense/TotalEarnings")
+                                                   .WithPayload(managementApiConsumer.TotalEarnings.ToString())
+                                                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
+                                                   .Build();
+                                                   await client.PublishAsync(applicationMessage, CancellationToken.None);
+                                                   tbTotalRevenue.Text = "$" + managementApiConsumer.TotalEarnings.ToString();
+                                                   lastTotalEarnings = managementApiConsumer.TotalEarnings;
+
+                                               }
+
+                                           }
+
+                                       };
+
+                                   };
+
                                };
 
                                client.ApplicationMessageReceivedAsync += funct;
@@ -325,7 +379,6 @@ namespace WinAdSenseTracker
                        }
                        catch
                        {
-                           // Handle the exception properly (logging etc.).                           
                        }
                        finally
                        {
@@ -339,8 +392,8 @@ namespace WinAdSenseTracker
             while (!client.IsConnected)
                 await Task.Delay(500);
 
-            btnUpdate.Enabled = true;
-            btnUpdate.Text = "&Update";
+            btnRefresh.Enabled = true;
+            btnRefresh.Text = "&Refresh";
 
             // Start timer1; setting the interval to 100ms below causes the timer to fire in the next second as opposed to waiting for the first interval to elapse
             timer1.Tag = "First pass";
@@ -352,8 +405,7 @@ namespace WinAdSenseTracker
         // timer1 is responsible for getting current the total page views and total revenue values from Google and publishing them to the MQTT broker
         //
         // timer1 is fired when initial setup is complete, and after that every fifteen minutes
-        // It also fires when the user clicks the 'Check for an update now' button on the main window.
-
+        // It also fires when the user clicks the 'Check for an Refresh now' button on the main window.
         private async void timer1_Tick(object sender, EventArgs e)
         {
 
@@ -367,6 +419,8 @@ namespace WinAdSenseTracker
 
                     // get the AdSense data from Google
                     managementApiConsumer.RunCalls();
+
+                    // note AdSense data will only need to be published if it has changed since the last time it was published
 
                     // Publish TotalPageViews if it has changed
                     if (managementApiConsumer.TotalPageViews != lastTotalPageViews)
@@ -407,30 +461,29 @@ namespace WinAdSenseTracker
                         lastTotalEarnings = managementApiConsumer.TotalEarnings;
                     };
 
-                    if (timer1.Tag == "Update now")
-                        btnUpdate.Text = "Update complete!";
+                    if (timer1.Tag == "Refresh now")
+                        btnRefresh.Text = "Refresh complete!";
 
                     timer1.Tag = "";
                 }
                 else
                 {
-                    btnUpdate.Text = "MQTT not connected";
-                    btnUpdate.Enabled = false;
+                    btnRefresh.Text = "MQTT not connected";
+                    btnRefresh.Enabled = false;
                     timer2.Stop();
                     timer2.Interval = 100;
                     timer2.Start();
                 };
 
-
                 // the following tweaks timer1 so that it fires at one second after midnight
                 // by which time Google should start reporting zero values for the day
                 // (assuming the PC time is correct)
-                      
+
                 DateTime now = DateTime.Now;
                 DateTime tomorrow = now.AddDays(1).Date;
                 TimeSpan duration = tomorrow - now;
                 int minutesUntilMidnight = (int)duration.TotalMinutes;
-                if (minutesUntilMidnight <= Properties.Settings.Default.UpdateFrequency)
+                if (minutesUntilMidnight <= Properties.Settings.Default.RefreshFrequency)
                 {
                     //calculate milliseconds until midnight
                     int millisecondsUntilMidnight = (int)duration.TotalMilliseconds;
@@ -440,17 +493,16 @@ namespace WinAdSenseTracker
                     timer1.Interval = millisecondsUntilMidnight + 1000;
                     timer1.Start();
 
-                }              
-               
+                }
+
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.Message);
             }
 
         }
 
-        // timer2 is used to keep the user from clicking the 'Update' button
+        // timer2 is used to keep the user from clicking the 'Refresh' button
         // for five seconds after last clicking it, and 
         // when the connect is lost
         private void timer2_Tick(object sender, EventArgs e)
@@ -459,32 +511,32 @@ namespace WinAdSenseTracker
 
             if (client.IsConnected)
             {
-                btnUpdate.Text = "&Update";
-                btnUpdate.Enabled = true;
+                btnRefresh.Text = "&Refresh";
+                btnRefresh.Enabled = true;
             }
             else
             {
-                btnUpdate.Text = "MQTT not connected";
-                btnUpdate.Enabled = false;
+                btnRefresh.Text = "MQTT not connected";
+                btnRefresh.Enabled = false;
             }
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private void btnRefresh_Click(object sender, EventArgs e)
         {
-            btnUpdate.Enabled = false;
+            btnRefresh.Enabled = false;
 
             if (client.IsConnected)
             {
-                // reset timer1 to trigger an immediate update
+                // reset timer1 to trigger an immediate refresh
                 timer1.Stop();
-                timer1.Tag = "Update now";
+                timer1.Tag = "Refresh now";
                 timer1.Interval = 100;
                 timer1.Start();
             }
             else
-                btnUpdate.Text = "MQTT not connected";
+                btnRefresh.Text = "MQTT not connected";
 
-            // use timer2 to re-enable the 'Update' button when appropriate
+            // use timer2 to re-enable the 'Refresh' button when appropriate
             timer2.Stop();
             timer2.Interval = 5000;
             timer2.Start();
@@ -508,7 +560,7 @@ namespace WinAdSenseTracker
             int holdMqttbrokerport = Properties.Settings.Default.MQTTBrokerPort;
             String holdMqttbrokerusername = Properties.Settings.Default.MQTTBrokerUserID;
             String holdMqttbrokerpassword = Properties.Settings.Default.MQTTBrokerPassword;
-            int holdUpdateFrequency = Properties.Settings.Default.UpdateFrequency;
+            int holdRefreshFrequency = Properties.Settings.Default.RefreshFrequency;
 
             frmSettings settingsForm = new frmSettings();
             DialogResult result = settingsForm.ShowDialog(this);
@@ -523,7 +575,7 @@ namespace WinAdSenseTracker
                                        (holdMqttbrokerport != Properties.Settings.Default.MQTTBrokerPort) ||
                                        (holdMqttbrokerusername != Properties.Settings.Default.MQTTBrokerUserID) ||
                                        (holdMqttbrokerpassword != Properties.Settings.Default.MQTTBrokerPassword) ||
-                                       (holdUpdateFrequency != Properties.Settings.Default.UpdateFrequency));
+                                       (holdRefreshFrequency != Properties.Settings.Default.RefreshFrequency));
 
                 if (somethingChanged)
                 {

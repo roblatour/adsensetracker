@@ -98,12 +98,12 @@ namespace WinAdSenseTracker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int UpdateFrequency {
+        public int RefreshFrequency {
             get {
-                return ((int)(this["UpdateFrequency"]));
+                return ((int)(this["RefreshFrequency"]));
             }
             set {
-                this["UpdateFrequency"] = value;
+                this["RefreshFrequency"] = value;
             }
         }
         

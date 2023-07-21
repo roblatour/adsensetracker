@@ -20,7 +20,7 @@
     <Setting Name="MQTTBrokerPassword" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="UpdateFrequency" Type="System.Int32" Scope="User">
+    <Setting Name="RefreshFrequency" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="AppVersion" Type="System.String" Scope="User">

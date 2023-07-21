@@ -49,7 +49,7 @@ namespace WinAdSenseTracker
 
             tbMQTTBrokerPassword.Text = Properties.Settings.Default.MQTTBrokerPassword;
 
-            nudUpdateFrequency.Value = Properties.Settings.Default.UpdateFrequency;
+            nudRefreshFrequency.Value = Properties.Settings.Default.RefreshFrequency;
 
             // Set focus to the first textbox
 
@@ -84,7 +84,7 @@ namespace WinAdSenseTracker
 
                 Properties.Settings.Default.MQTTBrokerPassword = tbMQTTBrokerPassword.Text.Trim();
 
-                Properties.Settings.Default.UpdateFrequency = (int)nudUpdateFrequency.Value;
+                Properties.Settings.Default.RefreshFrequency = (int)nudRefreshFrequency.Value;
 
                 Properties.Settings.Default.Save();
 

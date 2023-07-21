@@ -44,13 +44,13 @@
             label8 = new Label();
             groupBox3 = new GroupBox();
             label5 = new Label();
-            nudUpdateFrequency = new NumericUpDown();
+            nudRefreshFrequency = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)nudUpdateFrequency).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudRefreshFrequency).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
@@ -186,13 +186,13 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(label5);
-            groupBox3.Controls.Add(nudUpdateFrequency);
+            groupBox3.Controls.Add(nudRefreshFrequency);
             groupBox3.Location = new Point(12, 324);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(580, 68);
             groupBox3.TabIndex = 2;
             groupBox3.TabStop = false;
-            groupBox3.Text = "Update frequency";
+            groupBox3.Text = "Refresh frequency";
             // 
             // label5
             // 
@@ -201,18 +201,18 @@
             label5.Name = "label5";
             label5.Size = new Size(160, 15);
             label5.TabIndex = 2;
-            label5.Text = "Update frequency in minutes";
+            label5.Text = "Refresh frequency in minutes";
             // 
-            // nudUpdateFrequency
+            // nudRefreshFrequency
             // 
-            nudUpdateFrequency.Location = new Point(492, 32);
-            nudUpdateFrequency.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
-            nudUpdateFrequency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            nudUpdateFrequency.Name = "nudUpdateFrequency";
-            nudUpdateFrequency.Size = new Size(56, 23);
-            nudUpdateFrequency.TabIndex = 0;
-            nudUpdateFrequency.TextAlign = HorizontalAlignment.Right;
-            nudUpdateFrequency.Value = new decimal(new int[] { 15, 0, 0, 0 });
+            nudRefreshFrequency.Location = new Point(492, 32);
+            nudRefreshFrequency.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
+            nudRefreshFrequency.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            nudRefreshFrequency.Name = "nudRefreshFrequency";
+            nudRefreshFrequency.Size = new Size(56, 23);
+            nudRefreshFrequency.TabIndex = 0;
+            nudRefreshFrequency.TextAlign = HorizontalAlignment.Right;
+            nudRefreshFrequency.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // btnOK
             // 
@@ -254,7 +254,7 @@
             groupBox2.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)nudUpdateFrequency).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudRefreshFrequency).EndInit();
             ResumeLayout(false);
         }
 
@@ -276,7 +276,7 @@
         private Label label8;
         private GroupBox groupBox3;
         private Label label5;
-        private NumericUpDown nudUpdateFrequency;
+        private NumericUpDown nudRefreshFrequency;
         private Button btnOK;
         private Button btnCancel;
     }

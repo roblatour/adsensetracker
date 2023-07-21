@@ -35,7 +35,7 @@
             tbTotalRevenue = new TextBox();
             tbTotalPageViews = new TextBox();
             notifyIcon1 = new NotifyIcon(components);
-            btnUpdate = new Button();
+            btnRefresh = new Button();
             timer2 = new System.Windows.Forms.Timer(components);
             label3 = new Label();
             tbTotalClicks = new TextBox();
@@ -65,7 +65,7 @@
             label2.Name = "label2";
             label2.Size = new Size(92, 30);
             label2.TabIndex = 1;
-            label2.Text = "Revenue";
+            label2.Text = "Earnings";
             // 
             // tbTotalRevenue
             // 
@@ -101,14 +101,14 @@
             notifyIcon1.Visible = true;
             notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
             // 
-            // btnUpdate
+            // btnRefresh
             // 
-            btnUpdate.Location = new Point(18, 95);
-            btnUpdate.Name = "btnUpdate";
-            btnUpdate.Size = new Size(258, 27);
-            btnUpdate.TabIndex = 4;
-            btnUpdate.Text = "&Update";
-            btnUpdate.Click += btnUpdate_Click;
+            btnRefresh.Location = new Point(18, 95);
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new Size(258, 27);
+            btnRefresh.TabIndex = 4;
+            btnRefresh.Text = "&Refresh";
+            btnRefresh.Click += btnRefresh_Click;
             // 
             // timer2
             // 
@@ -139,21 +139,21 @@
             tbTotalClicks.Text = "0";
             tbTotalClicks.TextAlign = HorizontalAlignment.Right;
             // 
-            // Form1
+            // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(301, 133);
             Controls.Add(tbTotalClicks);
             Controls.Add(label3);
-            Controls.Add(btnUpdate);
+            Controls.Add(btnRefresh);
             Controls.Add(tbTotalPageViews);
             Controls.Add(tbTotalRevenue);
             Controls.Add(label2);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            Name = "Form1";
+            Name = "frmMain";
             Text = "WinAdSenseTracker";
             WindowState = FormWindowState.Minimized;
             ResumeLayout(false);
@@ -168,7 +168,7 @@
         private TextBox tbTotalRevenue;
         private TextBox tbTotalPageViews;
         private NotifyIcon notifyIcon1;
-        private Button btnUpdate;
+        private Button btnRefresh;
         private System.Windows.Forms.Timer timer2;
         private Label label3;
         private TextBox tbTotalClicks;
