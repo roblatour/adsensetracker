@@ -191,7 +191,7 @@ namespace WinAdSenseTracker
             {
 
                 // if it took more than a couple seconds to create the credential then the user was prompted to login to Google and authorize this app
-                // so we now need for up to 20 seconds for that to go live                            
+                // so we now need to wait for up to 20 seconds for that to go live                            
 
                 bool waitForGoogleAuthorizationToGoLive = true;
 
@@ -281,7 +281,7 @@ namespace WinAdSenseTracker
 
                                var response = await client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
 
-                             
+
                                // if the payload is "get last known values" it signifies the ESP32 has just been booted and wants to know the last known Adsense values so it can displayed them
                                //   
                                // if the payload is "get current values from Google" it signifies the user has press the top botton on the ESP32 to request an immediate refresh of the Adsense values
@@ -615,18 +615,24 @@ namespace WinAdSenseTracker
             this.WindowState = FormWindowState.Normal;
         }
 
-        private async void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Form1_Closing(object sender, FormClosingEventArgs e)
         {
-            if ((ShutdownWithoutQuestion) || (MessageBox.Show("Do you really want to quit (exit the program)?", this.Text + " - Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
+
+            if (e.CloseReason != CloseReason.WindowsShutDown)
             {
-                if (client.IsConnected)
+
+                if ((ShutdownWithoutQuestion) || (MessageBox.Show("Do you really want to exit the program?", this.Text + " - Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
                 {
-                    await client.DisconnectAsync(new MqttClientDisconnectOptionsBuilder().WithReason(MqttClientDisconnectOptionsReason.NormalDisconnection).Build());
-                };
-            }
-            else
-            {
-                e.Cancel = true;
+                    if (client.IsConnected)
+                    {
+                        await client.DisconnectAsync(new MqttClientDisconnectOptionsBuilder().WithReason(MqttClientDisconnectOptionsReason.NormalDisconnection).Build());
+                    };
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+
             }
         }
 

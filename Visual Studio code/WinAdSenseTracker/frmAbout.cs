@@ -26,7 +26,7 @@ namespace WinAdSenseTracker
             this.Text = frmMain.ApplicationName + " - About";
             this.Icon = Resources.WinAdSenseTracker;
 
-            this.labelProductAndVersion.Text = frmMain.ApplicationName;
+            this.labelProductAndVersion.Text = frmMain.ApplicationName + " v" + frmMain.ApplicationVersion;
 
             this.labelCopyright.Text = AssemblyCopyright;
 
