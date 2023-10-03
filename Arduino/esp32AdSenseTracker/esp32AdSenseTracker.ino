@@ -256,4 +256,7 @@ void loop() {
     delay(5000);
     updateDisplay();
   };
+  
+  ArduinoOTA.handle();
+	
 }
