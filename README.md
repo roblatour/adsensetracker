@@ -30,10 +30,6 @@ The open source code for the AdSense Tracker project:
 A 3D printable enclosure ( .stl and Fusion 360 source .fd3  files ) for a LilyGo T-Display S3
 can be found here: https://www.printables.com/model/339237-lilygo-t-display-s3-without-header-pins-case
 
-
 ## Support
 
-Want to contribute? Great!
-
-Please visit https://rlatour.com/adsensetracker 
-
+[<img alt="buy me  a coffee" width="200px" src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" />](https://www.buymeacoffee.com/roblatour)
