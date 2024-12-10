@@ -4,7 +4,7 @@ AdSense Tracker is an open source project to monitor Google AdSense views, click
 
 ![AdSense Tracker on a LilyGo T-Display S3](/images/exampledisplay.jpg)
 
-## This repo includes
+## This repo includes:
 
 The open source code for the AdSense Tracker project:
 
